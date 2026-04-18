@@ -90,16 +90,21 @@ void App::processInput()
 void App::run()
 {
     float time = glfwGetTime();
-    Mat4 translation = Mat4::translation(0.0f, 0.0f, 0.0f);
+    float aspect = static_cast<float>(_width) / static_cast<float>(_height);
+    Mat4 translation = Mat4::translation(0.0f, 0.0f, -2.0f);
     Mat4 rotation = Mat4::rotationZ(time);
     Mat4 model = translation * rotation;
+    Mat4 view = Mat4::identity();
+    Mat4 projection = Mat4::perspective(45.0f * 3.14159265f / 180.0f, aspect, 0.1f, 100.0f);
 
     while (!glfwWindowShouldClose(_window))
     {
         time = glfwGetTime();
-        translation = Mat4::translation(0.0f, 0.0f, 0.0f);
+        translation = Mat4::translation(0.0f, 0.0f, -2.0f);
         rotation = Mat4::rotationZ(time);
         model = translation * rotation;
+        view = Mat4::identity();
+        projection = Mat4::perspective(45.0f * 3.14159265f / 180.0f, aspect, 0.1f, 100.0f);
 
         processInput();
 
@@ -107,8 +112,15 @@ void App::run()
         glClear(GL_COLOR_BUFFER_BIT);
 
         _shader.use();
+
         GLuint modelLoc = glGetUniformLocation(_shader.getProgram(), "model");
+        GLuint viewLoc = glGetUniformLocation(_shader.getProgram(), "view");
+        GLuint projectionLoc = glGetUniformLocation(_shader.getProgram(), "projection");
+
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.m);
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.m);
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.m);
+
         glBindVertexArray(_vao);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);

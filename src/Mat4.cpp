@@ -10,10 +10,10 @@ Mat4::Mat4()
 Mat4 Mat4::identity()
 {
     Mat4 result;
-    result.m[0] = 1;
-    result.m[5] = 1;
-    result.m[10] = 1;
-    result.m[15] = 1;
+    result.m[0] = 1.0f;
+    result.m[5] = 1.0f;
+    result.m[10] = 1.0f;
+    result.m[15] = 1.0f;
     return result;
 }
 
@@ -37,6 +37,21 @@ Mat4 Mat4::rotationZ(float angle)
     result.m[1] = s;
     result.m[4] = -s;
     result.m[5] = c;
+
+    return result;
+}
+
+Mat4 Mat4::perspective(float fovRadians, float aspect, float nearPlane, float farPlane)
+{
+    Mat4 result;
+
+    float tanHalfFov = std::tan(fovRadians / 2.0f);
+
+    result.m[0] = 1.0f / (aspect * tanHalfFov);
+    result.m[5] = 1.0f / tanHalfFov;
+    result.m[10] = -(farPlane + nearPlane) / (farPlane - nearPlane);
+    result.m[11] = -1.0f;
+    result.m[14] = -(2.0f * farPlane * nearPlane) / (farPlane - nearPlane);
 
     return result;
 }
