@@ -7,11 +7,13 @@ LDFLAGS = -lglfw -lGLEW -lGL
 SRC_DIR = src
 OBJ_DIR = obj
 
-SRCS = $(SRC_DIR)/main.cpp \
-       $(SRC_DIR)/App.cpp \
-       $(SRC_DIR)/Shader.cpp \
-	   $(SRC_DIR)/Vec3.cpp \
-	   $(SRC_DIR)/Mat4.cpp
+SRCS =	$(SRC_DIR)/main.cpp \
+    	$(SRC_DIR)/App.cpp \
+    	$(SRC_DIR)/Shader.cpp \
+		$(SRC_DIR)/Vec3.cpp \
+		$(SRC_DIR)/Mat4.cpp \
+		$(SRC_DIR)/Mesh.cpp \
+		$(SRC_DIR)/ObjParser.cpp
 
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 

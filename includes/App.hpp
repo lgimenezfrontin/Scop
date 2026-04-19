@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 #include <string>
 #include "Shader.hpp"
+#include "Mesh.hpp"
+#include "ObjParser.hpp"
 
 class App
 {
@@ -23,11 +25,10 @@ private:
     std::string _title;
 
     Shader _shader;
-    GLuint _vao;
-    GLuint _vbo;
+    Mesh _mesh;
 
     void processInput();
-    bool initTriangle();
+    bool initMesh();
 };
 
 #endif
