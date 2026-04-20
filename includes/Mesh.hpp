@@ -23,10 +23,16 @@ public:
     void draw() const;
     void destroy();
 
+    Vec3 getCenter() const;
+
 private:
     std::vector<Vertex> _vertices;
     GLuint _vao;
     GLuint _vbo;
+    Vec3 _center;
+
+    void computeCenter();
+    void recenterVertices();
 };
 
 #endif

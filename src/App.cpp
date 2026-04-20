@@ -74,22 +74,19 @@ void App::processInput()
 
 void App::run()
 {
-    float time = glfwGetTime();
-    float aspect = static_cast<float>(_width) / static_cast<float>(_height);
-    Mat4 translation = Mat4::translation(0.0f, 0.0f, -2.0f);
-    Mat4 rotation = Mat4::rotationZ(time);
-    Mat4 model = translation * rotation;
-    Mat4 view = Mat4::identity();
-    Mat4 projection = Mat4::perspective(45.0f * 3.14159265f / 180.0f, aspect, 0.1f, 100.0f);
-
     while (!glfwWindowShouldClose(_window))
     {
-        time = glfwGetTime();
-        translation = Mat4::translation(0.0f, 0.0f, -2.0f);
-        rotation = Mat4::rotationZ(time);
-        model = translation * rotation;
-        view = Mat4::identity();
-        projection = Mat4::perspective(45.0f * 3.14159265f / 180.0f, aspect, 0.1f, 100.0f);
+        float time = glfwGetTime();
+
+        Mat4 rotation = Mat4::rotationZ(time);
+        Mat4 placeInScene = Mat4::translation(0.0f, 0.0f, -2.0f);
+
+        Mat4 model = placeInScene * rotation;
+
+        Mat4 view = Mat4::identity();
+
+        float aspect = static_cast<float>(_width) / static_cast<float>(_height);
+        Mat4 projection = Mat4::perspective(45.0f * 3.14159265f / 180.0f, aspect, 0.1f, 100.0f);
 
         processInput();
 
