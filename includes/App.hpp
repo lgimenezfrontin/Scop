@@ -7,6 +7,7 @@
 #include "Shader.hpp"
 #include "Mesh.hpp"
 #include "ObjParser.hpp"
+#include "Vec3.hpp"
 
 class App
 {
@@ -26,6 +27,7 @@ private:
 
     Shader _shader;
     Mesh _mesh;
+    Vec3 _objectPosition;
 
     void processInput();
     bool initMesh();

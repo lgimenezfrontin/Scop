@@ -4,7 +4,11 @@
 #include "../includes/App.hpp"
 
 App::App()
-    : _window(NULL), _width(1280), _height(720), _title("scop")
+    : _window(NULL),
+      _width(1280),
+      _height(720),
+      _title("scop"),
+      _objectPosition(0.0f, 0.0f, -2.0f)
 {
 }
 
@@ -68,8 +72,25 @@ bool App::init()
 
 void App::processInput()
 {
+    float moveSpeed = 0.01f;
+
     if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(_window, GLFW_TRUE);
+
+    if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
+        _objectPosition.x -= moveSpeed;
+    if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
+        _objectPosition.x += moveSpeed;
+
+    if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
+        _objectPosition.y += moveSpeed;
+    if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
+        _objectPosition.y -= moveSpeed;
+
+    if (glfwGetKey(_window, GLFW_KEY_Q) == GLFW_PRESS)
+        _objectPosition.z += moveSpeed;
+    if (glfwGetKey(_window, GLFW_KEY_E) == GLFW_PRESS)
+        _objectPosition.z -= moveSpeed;
 }
 
 void App::run()
@@ -79,9 +100,13 @@ void App::run()
         float time = glfwGetTime();
 
         Mat4 rotation = Mat4::rotationZ(time);
-        Mat4 placeInScene = Mat4::translation(0.0f, 0.0f, -2.0f);
+        Mat4 translation = Mat4::translation(
+            _objectPosition.x,
+            _objectPosition.y,
+            _objectPosition.z
+        );
 
-        Mat4 model = placeInScene * rotation;
+        Mat4 model = translation * rotation;
 
         Mat4 view = Mat4::identity();
 
