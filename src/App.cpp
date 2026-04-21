@@ -21,7 +21,7 @@ bool App::initMesh()
 {
     std::vector<Vertex> vertices;
 
-    if (!ObjParser::load("assets/test.obj", vertices))
+    if (!ObjParser::load("assets/teapot.obj", vertices))
         return false;
 
     return _mesh.upload(vertices);
@@ -106,7 +106,7 @@ void App::run()
             _objectPosition.z
         );
 
-        Mat4 model = translation * rotation;
+        Mat4 model = rotation * translation;
 
         Mat4 view = Mat4::identity();
 

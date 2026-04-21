@@ -8,9 +8,10 @@
 struct Vertex
 {
     Vec3 position;
+    Vec3 color;
 
     Vertex();
-    Vertex(const Vec3& position);
+    Vertex(const Vec3& position, const Vec3& color);
 };
 
 class Mesh

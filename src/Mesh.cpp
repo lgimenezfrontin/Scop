@@ -1,10 +1,11 @@
 #include "../includes/Mesh.hpp"
 
-Vertex::Vertex() : position()
+Vertex::Vertex() : position(), color()
 {
 }
 
-Vertex::Vertex(const Vec3& position) : position(position)
+Vertex::Vertex(const Vec3& position, const Vec3& color)
+    : position(position), color(color)
 {
 }
 
@@ -77,8 +78,13 @@ bool Mesh::upload(const std::vector<Vertex>& vertices)
                  &_vertices[0],
                  GL_STATIC_DRAW);
 
+    // position
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
     glEnableVertexAttribArray(0);
+
+    // couleur
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 3));
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);

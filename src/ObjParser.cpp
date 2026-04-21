@@ -4,6 +4,17 @@
 #include <sstream>
 #include <cstdlib>
 
+static const Vec3 colors[] = {
+    Vec3(1.0f, 0.0f, 0.0f),
+    Vec3(0.0f, 1.0f, 0.0f),
+    Vec3(0.0f, 0.0f, 1.0f),
+    Vec3(1.0f, 1.0f, 0.0f),
+    Vec3(1.0f, 0.0f, 1.0f),
+    Vec3(0.0f, 1.0f, 1.0f)
+};
+
+static int colorIndex = 0;
+
 bool ObjParser::load(const std::string& path, std::vector<Vertex>& outVertices)
 {
     std::ifstream file(path.c_str());
@@ -123,24 +134,34 @@ bool ObjParser::parseFaceLine(const std::string& line,
         std::cerr << "Error: face has fewer than 3 vertices: " << line << std::endl;
         return false;
     }
-
+        
     if (faceIndices.size() == 3)
     {
-        outVertices.push_back(Vertex(positions[faceIndices[0] - 1]));
-        outVertices.push_back(Vertex(positions[faceIndices[1] - 1]));
-        outVertices.push_back(Vertex(positions[faceIndices[2] - 1]));
+        Vec3 color = colors[colorIndex % 6];
+        colorIndex++;
+
+        outVertices.push_back(Vertex(positions[faceIndices[0] - 1], color));
+        outVertices.push_back(Vertex(positions[faceIndices[1] - 1], color));
+        outVertices.push_back(Vertex(positions[faceIndices[2] - 1], color));
+
         return true;
     }
 
     if (faceIndices.size() == 4)
     {
-        outVertices.push_back(Vertex(positions[faceIndices[0] - 1]));
-        outVertices.push_back(Vertex(positions[faceIndices[1] - 1]));
-        outVertices.push_back(Vertex(positions[faceIndices[2] - 1]));
+        Vec3 color = colors[colorIndex % 6];
+        colorIndex++;
 
-        outVertices.push_back(Vertex(positions[faceIndices[0] - 1]));
-        outVertices.push_back(Vertex(positions[faceIndices[2] - 1]));
-        outVertices.push_back(Vertex(positions[faceIndices[3] - 1]));
+        // triangle 1
+        outVertices.push_back(Vertex(positions[faceIndices[0] - 1], color));
+        outVertices.push_back(Vertex(positions[faceIndices[1] - 1], color));
+        outVertices.push_back(Vertex(positions[faceIndices[2] - 1], color));
+
+        // triangle 2
+        outVertices.push_back(Vertex(positions[faceIndices[0] - 1], color));
+        outVertices.push_back(Vertex(positions[faceIndices[2] - 1], color));
+        outVertices.push_back(Vertex(positions[faceIndices[3] - 1], color));
+
         return true;
     }
 
