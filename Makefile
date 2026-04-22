@@ -13,7 +13,9 @@ SRCS =	$(SRC_DIR)/main.cpp \
 		$(SRC_DIR)/Vec3.cpp \
 		$(SRC_DIR)/Mat4.cpp \
 		$(SRC_DIR)/Mesh.cpp \
-		$(SRC_DIR)/ObjParser.cpp
+		$(SRC_DIR)/ObjParser.cpp \
+		$(SRC_DIR)/Vec2.cpp \
+		$(SRC_DIR)/Texture.cpp
 
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 

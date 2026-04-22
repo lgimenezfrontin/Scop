@@ -25,6 +25,7 @@ bool ObjParser::load(const std::string& path, std::vector<Vertex>& outVertices)
     }
 
     std::vector<Vec3> positions;
+    std::vector<Vec2> texCoords;
     std::string line;
 
     while (std::getline(file, line))
@@ -39,9 +40,14 @@ bool ObjParser::load(const std::string& path, std::vector<Vertex>& outVertices)
             if (!parseVertexLine(line, positions))
                 return false;
         }
+        else if (line.size() >= 3 && line[0] == 'v' && line[1] == 't' && line[2] == ' ')
+        {
+            if (!parseTexCoordLine(line, texCoords))
+                return false;
+        }
         else if (line.size() >= 2 && line[0] == 'f' && line[1] == ' ')
         {
-            if (!parseFaceLine(line, positions, outVertices))
+            if (!parseFaceLine(line, positions, texCoords, outVertices))
                 return false;
         }
     }
@@ -72,19 +78,36 @@ bool ObjParser::parseVertexLine(const std::string& line, std::vector<Vec3>& posi
     return true;
 }
 
-bool ObjParser::parseFaceVertexToken(const std::string& token, int& positionIndex)
+bool ObjParser::parseTexCoordLine(const std::string& line, std::vector<Vec2>& texCoords)
 {
-    if (token.empty())
+    std::istringstream iss(line);
+    std::string type;
+    float u, v;
+
+    iss >> type >> u >> v;
+    if (iss.fail())
+    {
+        std::cerr << "Error: invalid texture coordinate line: " << line << std::endl;
         return false;
+    }
 
-    std::string positionPart;
-    std::size_t slashPos = token.find('/');
+    texCoords.push_back(Vec2(u, v));
+    return true;
+}
 
-    if (slashPos == std::string::npos)
-        positionPart = token;
-    else
-        positionPart = token.substr(0, slashPos);
+bool ObjParser::parseFaceVertexToken(const std::string& token, int& positionIndex, int& texCoordIndex)
+{
+    positionIndex = 0;
+    texCoordIndex = 0;
 
+    std::size_t firstSlash = token.find('/');
+    if (firstSlash == std::string::npos)
+    {
+        positionIndex = std::atoi(token.c_str());
+        return (positionIndex > 0);
+    }
+
+    std::string positionPart = token.substr(0, firstSlash);
     if (positionPart.empty())
         return false;
 
@@ -92,17 +115,35 @@ bool ObjParser::parseFaceVertexToken(const std::string& token, int& positionInde
     if (positionIndex <= 0)
         return false;
 
+    std::size_t secondSlash = token.find('/', firstSlash + 1);
+
+    if (secondSlash == std::string::npos)
+    {
+        std::string texPart = token.substr(firstSlash + 1);
+        if (!texPart.empty())
+            texCoordIndex = std::atoi(texPart.c_str());
+    }
+    else
+    {
+        std::string texPart = token.substr(firstSlash + 1, secondSlash - firstSlash - 1);
+        if (!texPart.empty())
+            texCoordIndex = std::atoi(texPart.c_str());
+    }
+
     return true;
 }
 
 bool ObjParser::parseFaceLine(const std::string& line,
                               const std::vector<Vec3>& positions,
+                              const std::vector<Vec2>& texCoords,
                               std::vector<Vertex>& outVertices)
 {
     std::istringstream iss(line);
     std::string type;
     std::string token;
-    std::vector<int> faceIndices;
+
+    std::vector<int> positionIndices;
+    std::vector<int> texCoordIndices;
 
     iss >> type;
     if (iss.fail())
@@ -113,55 +154,66 @@ bool ObjParser::parseFaceLine(const std::string& line,
 
     while (iss >> token)
     {
-        int index;
-        if (!parseFaceVertexToken(token, index))
+        int positionIndex;
+        int texCoordIndex;
+
+        if (!parseFaceVertexToken(token, positionIndex, texCoordIndex))
         {
             std::cerr << "Error: invalid face vertex token in line: " << line << std::endl;
             return false;
         }
 
-        if (index <= 0 || index > static_cast<int>(positions.size()))
+        if (positionIndex <= 0 || positionIndex > static_cast<int>(positions.size()))
         {
-            std::cerr << "Error: face index out of range: " << line << std::endl;
+            std::cerr << "Error: face position index out of range: " << line << std::endl;
             return false;
         }
 
-        faceIndices.push_back(index);
+        if (texCoordIndex > static_cast<int>(texCoords.size()))
+        {
+            std::cerr << "Error: face texture index out of range: " << line << std::endl;
+            return false;
+        }
+
+        positionIndices.push_back(positionIndex);
+        texCoordIndices.push_back(texCoordIndex);
     }
 
-    if (faceIndices.size() < 3)
+    if (positionIndices.size() < 3)
     {
         std::cerr << "Error: face has fewer than 3 vertices: " << line << std::endl;
         return false;
     }
-        
-    if (faceIndices.size() == 3)
+
+    Vec3 color = colors[colorIndex % 6];
+    colorIndex++;
+
+    if (positionIndices.size() == 3)
     {
-        Vec3 color = colors[colorIndex % 6];
-        colorIndex++;
+        for (int i = 0; i < 3; i++)
+        {
+            Vec2 uv(0.0f, 0.0f);
+            if (texCoordIndices[i] > 0)
+                uv = texCoords[texCoordIndices[i] - 1];
 
-        outVertices.push_back(Vertex(positions[faceIndices[0] - 1], color));
-        outVertices.push_back(Vertex(positions[faceIndices[1] - 1], color));
-        outVertices.push_back(Vertex(positions[faceIndices[2] - 1], color));
-
+            outVertices.push_back(Vertex(positions[positionIndices[i] - 1], color, uv));
+        }
         return true;
     }
 
-    if (faceIndices.size() == 4)
+    if (positionIndices.size() == 4)
     {
-        Vec3 color = colors[colorIndex % 6];
-        colorIndex++;
+        int triIndices[6] = {0, 1, 2, 0, 2, 3};
 
-        // triangle 1
-        outVertices.push_back(Vertex(positions[faceIndices[0] - 1], color));
-        outVertices.push_back(Vertex(positions[faceIndices[1] - 1], color));
-        outVertices.push_back(Vertex(positions[faceIndices[2] - 1], color));
+        for (int i = 0; i < 6; i++)
+        {
+            int idx = triIndices[i];
+            Vec2 uv(0.0f, 0.0f);
+            if (texCoordIndices[idx] > 0)
+                uv = texCoords[texCoordIndices[idx] - 1];
 
-        // triangle 2
-        outVertices.push_back(Vertex(positions[faceIndices[0] - 1], color));
-        outVertices.push_back(Vertex(positions[faceIndices[2] - 1], color));
-        outVertices.push_back(Vertex(positions[faceIndices[3] - 1], color));
-
+            outVertices.push_back(Vertex(positions[positionIndices[idx] - 1], color, uv));
+        }
         return true;
     }
 

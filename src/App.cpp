@@ -97,6 +97,29 @@ void App::processInput()
         _objectPosition.z += moveSpeed;
     if (glfwGetKey(_window, GLFW_KEY_E) == GLFW_PRESS)
         _objectPosition.z -= moveSpeed;
+
+    if (glfwGetKey(_window, GLFW_KEY_T) == GLFW_PRESS)
+    {
+        if (!_toggleKeyPressed)
+        {
+            _textureEnabled = !_textureEnabled;
+            _toggleKeyPressed = true;
+        }
+    }
+    else
+    {
+        _toggleKeyPressed = false;
+    }
+
+    if (_textureEnabled && _blendFactor < 1.0f)
+        _blendFactor += 0.02f;
+    if (!_textureEnabled && _blendFactor > 0.0f)
+        _blendFactor -= 0.02f;
+
+    if (_blendFactor < 0.0f)
+        _blendFactor = 0.0f;
+    if (_blendFactor > 1.0f)
+        _blendFactor = 1.0f;
 }
 
 void App::run()
@@ -113,27 +136,26 @@ void App::run()
         );
 
         Mat4 model = rotation * translation;
-
         Mat4 view = Mat4::identity();
 
         float aspect = static_cast<float>(_width) / static_cast<float>(_height);
         Mat4 projection = Mat4::perspective(45.0f * 3.14159265f / 180.0f, aspect, 0.1f, 100.0f);
-
-        processInput();
-
-        glClearColor(0.12f, 0.12f, 0.16f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
 
         _shader.use();
 
         GLuint modelLoc = glGetUniformLocation(_shader.getProgram(), "model");
         GLuint viewLoc = glGetUniformLocation(_shader.getProgram(), "view");
         GLuint projectionLoc = glGetUniformLocation(_shader.getProgram(), "projection");
+        GLuint blendLoc = glGetUniformLocation(_shader.getProgram(), "uBlendFactor");
+        GLuint textureLoc = glGetUniformLocation(_shader.getProgram(), "uTexture");
 
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, model.m);
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.m);
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.m);
+        glUniform1f(blendLoc, _blendFactor);
+        glUniform1i(textureLoc, 0);
 
+        _texture.bind(0);
         _mesh.draw();
 
         glfwSwapBuffers(_window);
@@ -144,6 +166,7 @@ void App::run()
 void App::cleanup()
 {
     _mesh.destroy();
+    _texture.destroy();
     _shader.destroy();
 
     if (_window)
