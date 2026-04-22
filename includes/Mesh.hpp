@@ -4,14 +4,16 @@
 #include <GL/glew.h>
 #include <vector>
 #include "Vec3.hpp"
+#include "Vec2.hpp"
 
 struct Vertex
 {
     Vec3 position;
     Vec3 color;
+    Vec2 uv;
 
     Vertex();
-    Vertex(const Vec3& position, const Vec3& color);
+    Vertex(const Vec3& position, const Vec3& color, const Vec2& uv);
 };
 
 class Mesh

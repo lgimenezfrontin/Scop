@@ -8,7 +8,10 @@ App::App()
       _width(1280),
       _height(720),
       _title("scop"),
-      _objectPosition(0.0f, 0.0f, -2.0f)
+      _objectPosition(0.0f, 0.0f, -2.0f),
+      _blendFactor(0.0f),
+      _textureEnabled(false),
+      _toggleKeyPressed(false)
 {
 }
 
@@ -65,6 +68,9 @@ bool App::init()
         return false;
 
     if (!initMesh())
+        return false;
+
+    if (!_texture.loadBMP("assets/texture.bmp"))
         return false;
 
     return true;

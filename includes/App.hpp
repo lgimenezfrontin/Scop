@@ -8,6 +8,7 @@
 #include "Mesh.hpp"
 #include "ObjParser.hpp"
 #include "Vec3.hpp"
+#include "Texture.hpp"
 
 class App
 {
@@ -27,7 +28,12 @@ private:
 
     Shader _shader;
     Mesh _mesh;
+    Texture _texture;
     Vec3 _objectPosition;
+
+    float _blendFactor;
+    bool _textureEnabled;
+    bool _toggleKeyPressed;
 
     void processInput();
     bool initMesh();
