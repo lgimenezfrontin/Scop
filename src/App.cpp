@@ -63,6 +63,7 @@ bool App::init()
     }
 
     glViewport(0, 0, _width, _height);
+    glEnable(GL_DEPTH_TEST);
 
     if (!_shader.loadFromFiles("shaders/triangle.vert", "shaders/triangle.frag"))
         return false;
@@ -129,7 +130,7 @@ void App::run()
         processInput();
 
         glClearColor(0.12f, 0.12f, 0.16f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         float time = glfwGetTime();
 
