@@ -70,7 +70,7 @@ bool App::init()
     if (!initMesh())
         return false;
 
-    if (!_texture.loadBMP("assets/Flowers.bmp"))
+    if (!_texture.loadBMP("assets/Fish.bmp"))
         return false;
 
     return true;

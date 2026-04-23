@@ -7,6 +7,14 @@
 #include "Vec3.hpp"
 #include "Vec2.hpp"
 
+struct Bounds
+{
+    float minX;
+    float maxX;
+    float minY;
+    float maxY;
+};
+
 class ObjParser
 {
 public:
@@ -18,7 +26,11 @@ private:
     static bool parseFaceLine(const std::string& line,
                               const std::vector<Vec3>& positions,
                               const std::vector<Vec2>& texCoords,
+                              const Bounds& bounds,
                               std::vector<Vertex>& outVertices);
     static bool parseFaceVertexToken(const std::string& token, int& positionIndex, int& texCoordIndex);
+    static Bounds computeBounds(const std::vector<Vec3>& positions);
+    static Vec2 generateUVFromPosition(const Vec3& p, const Bounds& bounds);
 };
+
 #endif
