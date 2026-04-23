@@ -34,6 +34,7 @@ private:
     float _blendFactor;
     bool _textureEnabled;
     bool _toggleKeyPressed;
+    bool _rotationKeyPressed;
     unsigned int _rotationAxis;
 
     void processInput();

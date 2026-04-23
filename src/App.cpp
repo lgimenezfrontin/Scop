@@ -12,6 +12,7 @@ App::App()
       _blendFactor(0.0f),
       _textureEnabled(false),
       _toggleKeyPressed(false),
+      _rotationKeyPressed(false),      
       _rotationAxis(0)
 {
 }
@@ -110,14 +111,19 @@ void App::processInput()
     }
     if (glfwGetKey(_window, GLFW_KEY_R) == GLFW_PRESS)
     {
-        if (_rotationAxis == 0 || _rotationAxis == 1)
-            _rotationAxis++;
-        else
-            _rotationAxis = 0;
+        if (!_rotationKeyPressed)
+        {
+            if (_rotationAxis == 0 || _rotationAxis == 1)
+                _rotationAxis++;
+            else
+                _rotationAxis = 0;
+            _rotationKeyPressed = true;
+        }
     }
     else
     {
         _toggleKeyPressed = false;
+        _rotationKeyPressed = false;
     }
 
     if (_textureEnabled && _blendFactor < 1.0f)
