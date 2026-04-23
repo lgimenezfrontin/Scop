@@ -26,6 +26,36 @@ Mat4 Mat4::translation(float x, float y, float z)
     return result;
 }
 
+Mat4 Mat4::rotationX(float angle)
+{
+    Mat4 result = identity();
+
+    float c = std::cos(angle);
+    float s = std::sin(angle);
+
+    result.m[5] = c;
+    result.m[6] = s;
+    result.m[9] = -s;
+    result.m[10] = c;
+
+    return result;
+}
+
+Mat4 Mat4::rotationY(float angle)
+{
+    Mat4 result = identity();
+
+    float c = std::cos(angle);
+    float s = std::sin(angle);
+
+    result.m[0] = c;
+    result.m[2] = -s;
+    result.m[8] = s;
+    result.m[10] = c;
+
+    return result;
+}
+
 Mat4 Mat4::rotationZ(float angle)
 {
     Mat4 result = identity();

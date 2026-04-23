@@ -11,7 +11,8 @@ App::App()
       _objectPosition(0.0f, 0.0f, -2.0f),
       _blendFactor(0.0f),
       _textureEnabled(false),
-      _toggleKeyPressed(false)
+      _toggleKeyPressed(false),
+      _rotationAxis(0)
 {
 }
 
@@ -107,6 +108,13 @@ void App::processInput()
             _toggleKeyPressed = true;
         }
     }
+    if (glfwGetKey(_window, GLFW_KEY_R) == GLFW_PRESS)
+    {
+        if (_rotationAxis == 0 || _rotationAxis == 1)
+            _rotationAxis++;
+        else
+            _rotationAxis = 0;
+    }
     else
     {
         _toggleKeyPressed = false;
@@ -134,7 +142,14 @@ void App::run()
 
         float time = glfwGetTime();
 
-        Mat4 rotation = Mat4::rotationZ(time);
+        Mat4 rotation;
+        if (_rotationAxis == 0)
+            rotation = Mat4::rotationY(time);
+        else if (_rotationAxis == 1)
+            rotation = Mat4::rotationX(time);
+        else
+            rotation = Mat4::rotationZ(time);  
+
         Mat4 translation = Mat4::translation(
             _objectPosition.x,
             _objectPosition.y,
