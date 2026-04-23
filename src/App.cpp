@@ -70,7 +70,7 @@ bool App::init()
     if (!initMesh())
         return false;
 
-    if (!_texture.loadBMP("assets/texture.bmp"))
+    if (!_texture.loadBMP("assets/Flowers.bmp"))
         return false;
 
     return true;
@@ -126,6 +126,11 @@ void App::run()
 {
     while (!glfwWindowShouldClose(_window))
     {
+        processInput();
+
+        glClearColor(0.12f, 0.12f, 0.16f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         float time = glfwGetTime();
 
         Mat4 rotation = Mat4::rotationZ(time);
