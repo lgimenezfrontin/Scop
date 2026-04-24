@@ -35,6 +35,7 @@ private:
     bool _textureEnabled;
     bool _toggleKeyPressed;
     bool _rotationKeyPressed;
+    bool _recenterKeyPressed;
     unsigned int _rotationAxis;
 
     void processInput();

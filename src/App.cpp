@@ -8,11 +8,12 @@ App::App()
       _width(1280),
       _height(720),
       _title("scop"),
-      _objectPosition(0.0f, 0.0f, -2.0f),
+      _objectPosition(0.0f, 0.0f, -6.0f),
       _blendFactor(0.0f),
       _textureEnabled(false),
       _toggleKeyPressed(false),
-      _rotationKeyPressed(false),      
+      _rotationKeyPressed(false),
+      _recenterKeyPressed(false),
       _rotationAxis(0)
 {
 }
@@ -26,7 +27,7 @@ bool App::initMesh()
 {
     std::vector<Vertex> vertices;
 
-    if (!ObjParser::load("assets/teapot.obj", vertices))
+    if (!ObjParser::load("assets/42.obj", vertices))
         return false;
 
     return _mesh.upload(vertices);
@@ -81,7 +82,7 @@ bool App::init()
 
 void App::processInput()
 {
-    float moveSpeed = 0.01f;
+    float moveSpeed = 0.02f;
 
     if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(_window, GLFW_TRUE);
@@ -120,10 +121,21 @@ void App::processInput()
             _rotationKeyPressed = true;
         }
     }
+    if (glfwGetKey(_window, GLFW_KEY_C) == GLFW_PRESS)
+    {
+        if (!_recenterKeyPressed)
+        {
+            _objectPosition.x = 0.0f;
+            _objectPosition.y = 0.0f;
+            _objectPosition.z = -6.0f;
+            _recenterKeyPressed = true;
+        }
+    }
     else
     {
         _toggleKeyPressed = false;
         _rotationKeyPressed = false;
+        _recenterKeyPressed = false;
     }
 
     if (_textureEnabled && _blendFactor < 1.0f)
