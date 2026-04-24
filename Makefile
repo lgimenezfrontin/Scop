@@ -1,39 +1,40 @@
-NAME = scop
+IMAGE_NAME=fedora-container
+CONTAINER_NAME=fedora-running
 
-CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++17 -Iinclude
-LDFLAGS = -lglfw -lGLEW -lGL
+.PHONY: build run make clean shell
 
-SRC_DIR = src
-OBJ_DIR = obj
+make: build run shell
 
-SRCS =	$(SRC_DIR)/main.cpp \
-    	$(SRC_DIR)/App.cpp \
-    	$(SRC_DIR)/Shader.cpp \
-		$(SRC_DIR)/Vec3.cpp \
-		$(SRC_DIR)/Mat4.cpp \
-		$(SRC_DIR)/Mesh.cpp \
-		$(SRC_DIR)/ObjParser.cpp \
-		$(SRC_DIR)/Vec2.cpp \
-		$(SRC_DIR)/Texture.cpp
+build:
+	docker build -t $(IMAGE_NAME) .
 
-OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+run:
+	xhost +local: || true
+	docker run -dit \
+		--name $(CONTAINER_NAME) \
+		-e DISPLAY=$$DISPLAY \
+		-e XDG_RUNTIME_DIR=/tmp \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		-v $(PWD):/workspace \
+		-w /workspace \
+		--device /dev/dri \
+		$(IMAGE_NAME)
 
-all: $(NAME)
+shell:
+	docker exec -it $(CONTAINER_NAME) /bin/bash
 
-$(NAME): $(OBJS)
-	$(CXX) $(OBJS) -o $(NAME) $(LDFLAGS)
+stop:
+	docker kill $(CONTAINER_NAME) || true
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+start:
+	docker start $(CONTAINER_NAME) || true
 
-clean:
-	rm -rf $(OBJ_DIR)
+rmc:
+	docker rm -f $(CONTAINER_NAME) ||true
 
-fclean: clean
-	rm -f $(NAME)
+end: stop rmc
 
-re: fclean all
+clean: end
+	docker rmi -f $(IMAGE_NAME) || true
 
-.PHONY: all clean fclean re
+re: clean make
