@@ -5,12 +5,13 @@
 #include <cstdlib>
 
 static const Vec3 colors[] = {
-    Vec3(1.0f, 0.0f, 0.0f),
-    Vec3(0.0f, 1.0f, 0.0f),
-    Vec3(0.0f, 0.0f, 1.0f),
-    Vec3(1.0f, 1.0f, 0.0f),
-    Vec3(1.0f, 0.0f, 1.0f),
-    Vec3(0.0f, 1.0f, 1.0f)
+    Vec3(0.25f, 0.25f, 0.25f),
+    Vec3(0.35f, 0.35f, 0.35f),
+    Vec3(0.45f, 0.45f, 0.45f),
+    Vec3(0.55f, 0.55f, 0.55f),
+    Vec3(0.65f, 0.65f, 0.65f),
+    Vec3(0.75f, 0.75f, 0.75f),
+    Vec3(0.85f, 0.85f, 0.85f)
 };
 
 static int colorIndex = 0;
@@ -238,7 +239,7 @@ bool ObjParser::parseFaceLine(const std::string& line,
         return false;
     }
 
-    Vec3 color = colors[colorIndex % 6];
+    Vec3 color = colors[colorIndex % 7];
     colorIndex++;
 
     if (positionIndices.size() == 3)
