@@ -66,19 +66,19 @@ Vec2 ObjParser::generateUVFromPosition(const Vec3& p, const Bounds& bounds)
     float u = 0.0f;
     float v = 0.0f;
 
-    if (bounds.uvPlane == 0)
+    if (bounds.uvPlane == 0) //XY
     {
         u = (p.x - bounds.minX) / (bounds.maxX - bounds.minX);
         v = (p.y - bounds.minY) / (bounds.maxY - bounds.minY);
         return Vec2(u, v);
     }
-    else if (bounds.uvPlane == 1)
+    else if (bounds.uvPlane == 1) //XZ
     {
         u = (p.x - bounds.minX) / (bounds.maxX - bounds.minX);
         v = (p.z - bounds.minZ) / (bounds.maxZ - bounds.minZ);
         Vec2(v, u);
     }
-    else
+    else //YZ
     {
         u = (p.y - bounds.minY) / (bounds.maxY - bounds.minY);
         v = (p.z - bounds.minZ) / (bounds.maxZ - bounds.minZ);

@@ -12,6 +12,22 @@ Texture::~Texture()
     destroy();
 }
 
+static int readIntLE(const unsigned char* data)
+{
+    return static_cast<int>(data[0]) |
+           (static_cast<int>(data[1]) << 8) |
+           (static_cast<int>(data[2]) << 16) |
+           (static_cast<int>(data[3]) << 24);
+}
+
+static short readShortLE(const unsigned char* data)
+{
+    return static_cast<short>(
+        static_cast<int>(data[0]) |
+        (static_cast<int>(data[1]) << 8)
+    );
+}
+
 bool Texture::loadBMP(const std::string& path)
 {
     std::ifstream file(path.c_str(), std::ios::binary);
@@ -35,11 +51,11 @@ bool Texture::loadBMP(const std::string& path)
         return false;
     }
 
-    int dataOffset = *reinterpret_cast<int*>(&header[10]);
-    int width = *reinterpret_cast<int*>(&header[18]);
-    int height = *reinterpret_cast<int*>(&header[22]);
-    short bitsPerPixel = *reinterpret_cast<short*>(&header[28]);
-    int imageSize = *reinterpret_cast<int*>(&header[34]);
+    int dataOffset = readIntLE(&header[10]);
+    int width = readIntLE(&header[18]);
+    int height = readIntLE(&header[22]);
+    short bitsPerPixel = readShortLE(&header[28]);
+    int imageSize = readIntLE(&header[34]);
 
     if (bitsPerPixel != 24)
     {

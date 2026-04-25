@@ -11,7 +11,9 @@ RUN dnf -y update && \
         libXrandr libXrandr-devel \
         libXinerama libXinerama-devel \
         libXcursor libXcursor-devel \
-        libXi libXi-devel && \
+        libXi libXi-devel \
+        libasan \
+        libubsan && \
     dnf clean all
 
 CMD ["/bin/bash"]

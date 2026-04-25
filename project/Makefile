@@ -3,6 +3,8 @@ NAME = scop
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++17 -Iinclude
 LDFLAGS = -lglfw -lGLEW -lGL
+CFLEAKS = -Wall -Wextra -Werror -std=c++17 -g3 -fsanitize=address,leak,undefined -fno-omit-frame-pointer -Iinclude
+LFLEAKS = -lglfw -lGLEW -lGL -fsanitize=address,leak,undefined
 
 SRC_DIR = src
 OBJ_DIR = obj
@@ -27,6 +29,12 @@ $(NAME): $(OBJS)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+leaks: fclean
+	make CXXFLAGS="-Wall -Wextra -Werror -std=c++17 \
+	-g3 -fsanitize=address,leak,undefined -fno-omit-frame-pointer -Iinclude" \
+    LDFLAGS="-lglfw -lGLEW -lGL -fsanitize=address,leak,undefined"
+	ASAN_OPTIONS=detect_leaks=1:halt_on_error=0 ./scop
 
 clean:
 	rm -rf $(OBJ_DIR)
