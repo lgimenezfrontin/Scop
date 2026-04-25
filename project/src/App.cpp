@@ -27,7 +27,7 @@ bool App::initMesh()
 {
     std::vector<Vertex> vertices;
 
-    if (!ObjParser::load("assets/teapot2.obj", vertices))
+    if (!ObjParser::load("assets/42.obj", vertices))
         return false;
 
     return _mesh.upload(vertices);

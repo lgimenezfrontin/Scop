@@ -24,6 +24,8 @@ Bounds ObjParser::computeBounds(const std::vector<Vec3>& positions)
     bounds.maxX = positions[0].x;
     bounds.minY = positions[0].y;
     bounds.maxY = positions[0].y;
+    bounds.minZ = positions[0].z;
+    bounds.maxZ = positions[0].z;
 
     for (std::size_t i = 1; i < positions.size(); i++)
     {
@@ -35,7 +37,24 @@ Bounds ObjParser::computeBounds(const std::vector<Vec3>& positions)
             bounds.minY = positions[i].y;
         if (positions[i].y > bounds.maxY)
             bounds.maxY = positions[i].y;
+        if (positions[i].z < bounds.minZ)
+            bounds.minZ = positions[i].z;
+        if (positions[i].z > bounds.maxZ)
+            bounds.maxZ = positions[i].z;
     }
+
+    float sizeX = bounds.maxX - bounds.minX;
+    float sizeY = bounds.maxY - bounds.minY;
+    float sizeZ = bounds.maxZ - bounds.minZ;
+    float areaXY = sizeX * sizeY;
+    float areaXZ = sizeX * sizeZ;
+    float areaYZ = sizeY * sizeZ;
+
+    bounds.uvPlane = 0;
+    if (areaXZ > areaXY && areaXZ > areaYZ)
+        bounds.uvPlane = 1;
+    else if (areaYZ > areaXY && areaYZ > areaXZ)
+        bounds.uvPlane = 1;
 
     return bounds;
 }
@@ -45,11 +64,30 @@ Vec2 ObjParser::generateUVFromPosition(const Vec3& p, const Bounds& bounds)
     float u = 0.0f;
     float v = 0.0f;
 
-    if (bounds.maxX > bounds.minX)
-        u = (p.x - bounds.minX) / (bounds.maxX - bounds.minX);
+    if (bounds.uvPlane == 0) //XY
+    {
+        if (bounds.maxX > bounds.minX)
+            u = (p.x - bounds.minX) / (bounds.maxX - bounds.minX);
 
-    if (bounds.maxY > bounds.minY)
-        v = (p.y - bounds.minY) / (bounds.maxY - bounds.minY);
+        if (bounds.maxY > bounds.minY)
+            v = (p.y - bounds.minY) / (bounds.maxY - bounds.minY);
+    }
+    else if (bounds.uvPlane == 1) //XZ
+    {
+        if (bounds.maxX > bounds.minX)
+            u = (p.x - bounds.minX) / (bounds.maxX - bounds.minX);
+
+        if (bounds.maxZ > bounds.minZ)
+            v = (p.z - bounds.minZ) / (bounds.maxZ - bounds.minZ);
+    }
+    else //YZ
+    {
+        if (bounds.maxY > bounds.minY)
+            u = (p.y - bounds.minY) / (bounds.maxY - bounds.minY);
+
+        if (bounds.maxZ > bounds.minZ)
+            v = (p.z - bounds.minZ) / (bounds.maxZ - bounds.minZ);
+    }
 
     return Vec2(u, v);
 }

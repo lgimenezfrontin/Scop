@@ -13,6 +13,9 @@ struct Bounds
     float maxX;
     float minY;
     float maxY;
+    float minZ;
+    float maxZ;
+    int uvPlane;
 };
 
 class ObjParser
