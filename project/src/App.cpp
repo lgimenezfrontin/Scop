@@ -3,6 +3,9 @@
 #include "../includes/Mat4.hpp"
 #include "../includes/App.hpp"
 
+#define OBJ_PATH "assets/42.obj"
+#define TEX_PATH "assets/Kittens.bmp"
+
 App::App()
     : _window(NULL),
       _width(1280),
@@ -27,7 +30,7 @@ bool App::initMesh()
 {
     std::vector<Vertex> vertices;
 
-    if (!ObjParser::load("assets/42.obj", vertices))
+    if (!ObjParser::load(OBJ_PATH, vertices))
         return false;
 
     return _mesh.upload(vertices);
@@ -74,7 +77,7 @@ bool App::init()
     if (!initMesh())
         return false;
 
-    if (!_texture.loadBMP("assets/Fish.bmp"))
+    if (!_texture.loadBMP(TEX_PATH))
         return false;
 
     return true;

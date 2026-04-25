@@ -4,7 +4,7 @@
 #include <sstream>
 #include <cstdlib>
 
-static const Vec3 colors[] = {
+static const Vec3 colors[] = { //Shades of gray
     Vec3(0.25f, 0.25f, 0.25f),
     Vec3(0.35f, 0.35f, 0.35f),
     Vec3(0.45f, 0.45f, 0.45f),
@@ -50,11 +50,13 @@ Bounds ObjParser::computeBounds(const std::vector<Vec3>& positions)
     float areaXZ = sizeX * sizeZ;
     float areaYZ = sizeY * sizeZ;
 
-    bounds.uvPlane = 0;
-    if (areaXZ > areaXY && areaXZ > areaYZ)
+    bounds.uvPlane = 0; //XY is widest plane
+    if (areaXZ > areaXY && areaXZ > areaYZ) //XZ is widest plane
         bounds.uvPlane = 1;
-    else if (areaYZ > areaXY && areaYZ > areaXZ)
-        bounds.uvPlane = 1;
+    else if (areaYZ > areaXY && areaYZ > areaXZ) //YZ is widest plane
+        bounds.uvPlane = 2;
+
+    // bounds.uvPlane = 0; //Test other planes for texture
 
     return bounds;
 }
@@ -64,29 +66,23 @@ Vec2 ObjParser::generateUVFromPosition(const Vec3& p, const Bounds& bounds)
     float u = 0.0f;
     float v = 0.0f;
 
-    if (bounds.uvPlane == 0) //XY
+    if (bounds.uvPlane == 0)
     {
-        if (bounds.maxX > bounds.minX)
-            u = (p.x - bounds.minX) / (bounds.maxX - bounds.minX);
-
-        if (bounds.maxY > bounds.minY)
-            v = (p.y - bounds.minY) / (bounds.maxY - bounds.minY);
+        u = (p.x - bounds.minX) / (bounds.maxX - bounds.minX);
+        v = (p.y - bounds.minY) / (bounds.maxY - bounds.minY);
+        return Vec2(u, v);
     }
-    else if (bounds.uvPlane == 1) //XZ
+    else if (bounds.uvPlane == 1)
     {
-        if (bounds.maxX > bounds.minX)
-            u = (p.x - bounds.minX) / (bounds.maxX - bounds.minX);
-
-        if (bounds.maxZ > bounds.minZ)
-            v = (p.z - bounds.minZ) / (bounds.maxZ - bounds.minZ);
+        u = (p.x - bounds.minX) / (bounds.maxX - bounds.minX);
+        v = (p.z - bounds.minZ) / (bounds.maxZ - bounds.minZ);
+        Vec2(v, u);
     }
-    else //YZ
+    else
     {
-        if (bounds.maxY > bounds.minY)
-            u = (p.y - bounds.minY) / (bounds.maxY - bounds.minY);
-
-        if (bounds.maxZ > bounds.minZ)
-            v = (p.z - bounds.minZ) / (bounds.maxZ - bounds.minZ);
+        u = (p.y - bounds.minY) / (bounds.maxY - bounds.minY);
+        v = (p.z - bounds.minZ) / (bounds.maxZ - bounds.minZ);
+        return Vec2(1.0f - v, u);
     }
 
     return Vec2(u, v);
@@ -279,7 +275,6 @@ bool ObjParser::parseFaceLine(const std::string& line,
 
     Vec3 color = colors[colorIndex % 7];
     colorIndex++;
-
     if (positionIndices.size() == 3)
     {
         for (int i = 0; i < 3; i++)
