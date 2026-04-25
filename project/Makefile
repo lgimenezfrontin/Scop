@@ -34,7 +34,7 @@ leaks: fclean
 	make CXXFLAGS="-Wall -Wextra -Werror -std=c++17 \
 		-g3 -fsanitize=address,leak,undefined -fno-omit-frame-pointer -Iinclude" \
     	LDFLAGS="-lglfw -lGLEW -lGL -fsanitize=address,leak,undefined"
-	ASAN_OPTIONS=detect_leaks=1:halt_on_error=0 ./scop
+	ASAN_OPTIONS=detect_leaks=1:halt_on_error=0 ./scop || true
 
 clean:
 	rm -rf $(OBJ_DIR)

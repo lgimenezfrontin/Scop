@@ -4,14 +4,19 @@
 #include "../includes/App.hpp"
 
 #define OBJ_PATH "assets/42.obj"
-#define TEX_PATH "assets/Kittens.bmp"
+#define TEX_PATH "assets/kittens.bmp"
+#define INIT_POSX 0.0f
+#define INIT_POSY 0.0f
+#define INIT_POSZ -6.0f
+#define MV_SPEED 0.03f
+
 
 App::App()
     : _window(NULL),
       _width(1280),
       _height(720),
       _title("scop"),
-      _objectPosition(0.0f, 0.0f, -6.0f),
+      _objectPosition(INIT_POSX, INIT_POSY, INIT_POSZ),
       _blendFactor(0.0f),
       _textureEnabled(false),
       _toggleKeyPressed(false),
@@ -77,7 +82,13 @@ bool App::init()
     if (!initMesh())
         return false;
 
-    if (!_texture.loadBMP(TEX_PATH))
+    const std::string& path = TEX_PATH;
+    if (path.length() < 4 || path.substr(path.length() - 4) != ".bmp")
+    {
+        std::cerr << "Error: file is not a .bmp: " << path << std::endl;
+        return false;
+    }
+    if (!_texture.loadBMP(path))
         return false;
 
     return true;
@@ -85,25 +96,25 @@ bool App::init()
 
 void App::processInput()
 {
-    float moveSpeed = 0.02f;
+    //float moveSpeed = 0.02f;
 
     if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(_window, GLFW_TRUE);
 
     if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
-        _objectPosition.x -= moveSpeed;
+        _objectPosition.x -= MV_SPEED;
     if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
-        _objectPosition.x += moveSpeed;
+        _objectPosition.x += MV_SPEED;
 
     if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
-        _objectPosition.y += moveSpeed;
+        _objectPosition.y += MV_SPEED;
     if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
-        _objectPosition.y -= moveSpeed;
+        _objectPosition.y -= MV_SPEED;
 
     if (glfwGetKey(_window, GLFW_KEY_Q) == GLFW_PRESS)
-        _objectPosition.z += moveSpeed;
+        _objectPosition.z += MV_SPEED;
     if (glfwGetKey(_window, GLFW_KEY_E) == GLFW_PRESS)
-        _objectPosition.z -= moveSpeed;
+        _objectPosition.z -= MV_SPEED;
 
     if (glfwGetKey(_window, GLFW_KEY_T) == GLFW_PRESS && !_toggleKeyPressed)
     {
@@ -127,9 +138,9 @@ void App::processInput()
     if (glfwGetKey(_window, GLFW_KEY_C) == GLFW_PRESS && !_recenterKeyPressed)
     {
         _recenterKeyPressed = true;
-        _objectPosition.x = 0.0f;
-        _objectPosition.y = 0.0f;
-        _objectPosition.z = -6.0f;
+        _objectPosition.x = INIT_POSX;
+        _objectPosition.y = INIT_POSY;
+        _objectPosition.z = INIT_POSZ;
     }
     else if (glfwGetKey(_window, GLFW_KEY_C) == GLFW_RELEASE)
         _recenterKeyPressed = false;

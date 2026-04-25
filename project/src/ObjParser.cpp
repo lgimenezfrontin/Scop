@@ -90,10 +90,16 @@ Vec2 ObjParser::generateUVFromPosition(const Vec3& p, const Bounds& bounds)
 
 bool ObjParser::load(const std::string& path, std::vector<Vertex>& outVertices)
 {
+    if (path.length() < 4 || path.substr(path.length() - 4) != ".obj")
+    {
+        std::cerr << "Error: file is not a .obj: " << path << std::endl;
+        return false;
+    }
+
     std::ifstream file(path.c_str());
     if (!file.is_open())
     {
-        std::cerr << "Error: could not open OBJ file: " << path << std::endl;
+        std::cerr << "Error: could not open .obj file: " << path << std::endl;
         return false;
     }
 
@@ -120,9 +126,7 @@ bool ObjParser::load(const std::string& path, std::vector<Vertex>& outVertices)
                 return false;
         }
         else if (line.size() >= 2 && line[0] == 'f' && line[1] == ' ')
-        {
             faceLines.push_back(line);
-        }
     }
 
     if (positions.empty())
