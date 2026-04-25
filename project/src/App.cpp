@@ -102,41 +102,34 @@ void App::processInput()
     if (glfwGetKey(_window, GLFW_KEY_E) == GLFW_PRESS)
         _objectPosition.z -= moveSpeed;
 
-    if (glfwGetKey(_window, GLFW_KEY_T) == GLFW_PRESS)
+    if (glfwGetKey(_window, GLFW_KEY_T) == GLFW_PRESS && !_toggleKeyPressed)
     {
-        if (!_toggleKeyPressed)
-        {
-            _textureEnabled = !_textureEnabled;
-            _toggleKeyPressed = true;
-        }
+        _toggleKeyPressed = true;
+        _textureEnabled = !_textureEnabled;
     }
-    if (glfwGetKey(_window, GLFW_KEY_R) == GLFW_PRESS)
-    {
-        if (!_rotationKeyPressed)
-        {
-            if (_rotationAxis == 0 || _rotationAxis == 1)
-                _rotationAxis++;
-            else
-                _rotationAxis = 0;
-            _rotationKeyPressed = true;
-        }
-    }
-    if (glfwGetKey(_window, GLFW_KEY_C) == GLFW_PRESS)
-    {
-        if (!_recenterKeyPressed)
-        {
-            _objectPosition.x = 0.0f;
-            _objectPosition.y = 0.0f;
-            _objectPosition.z = -6.0f;
-            _recenterKeyPressed = true;
-        }
-    }
-    else
-    {
+    else if (glfwGetKey(_window, GLFW_KEY_T) == GLFW_RELEASE)
         _toggleKeyPressed = false;
-        _rotationKeyPressed = false;
-        _recenterKeyPressed = false;
+
+    if (glfwGetKey(_window, GLFW_KEY_R) == GLFW_PRESS && !_rotationKeyPressed)
+    {
+        _rotationKeyPressed = true;
+        if (_rotationAxis == 0 || _rotationAxis == 1)
+            _rotationAxis++;
+        else
+            _rotationAxis = 0;
     }
+    else if (glfwGetKey(_window, GLFW_KEY_R) == GLFW_RELEASE)
+        _rotationKeyPressed = false;
+
+    if (glfwGetKey(_window, GLFW_KEY_C) == GLFW_PRESS && !_recenterKeyPressed)
+    {
+        _recenterKeyPressed = true;
+        _objectPosition.x = 0.0f;
+        _objectPosition.y = 0.0f;
+        _objectPosition.z = -6.0f;
+    }
+    else if (glfwGetKey(_window, GLFW_KEY_C) == GLFW_RELEASE)
+        _recenterKeyPressed = false;
 
     if (_textureEnabled && _blendFactor < 1.0f)
         _blendFactor += 0.02f;
