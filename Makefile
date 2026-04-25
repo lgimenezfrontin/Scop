@@ -1,10 +1,13 @@
+NAME = scop
+
 IMAGE_NAME=fedora-container
 CONTAINER_NAME=fedora-running
 
-.PHONY: build run make clean shell
+all: build run
+	podman exec -it $(CONTAINER_NAME) /bin/bash \
+		-c "cd ./project && make re && exec /bin/bash"
 
-make: build run
-	podman exec -it $(CONTAINER_NAME) /bin/bash
+$(NAME): all
 
 build:
 	podman build -t $(IMAGE_NAME) .
@@ -20,7 +23,7 @@ run:
 		-v $(PWD):/workspace:Z \
 		-w /workspace \
 		--device /dev/dri \
-		$(IMAGE_NAME)
+		$(IMAGE_NAME) || true
 
 stop:
 	podman kill $(CONTAINER_NAME) || true
@@ -31,9 +34,11 @@ start:
 rmc:
 	podman rm -f $(CONTAINER_NAME) ||true
 
-end: stop rmc
+clean: stop rmc
 
-clean: end
+fclean: clean
 	podman rmi -f $(IMAGE_NAME) || true
 
-re: clean make
+re: fclean all
+
+.PHONY: all build run stop start rmc end clean fclean re
